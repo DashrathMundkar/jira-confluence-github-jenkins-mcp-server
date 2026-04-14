@@ -1,0 +1,104 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "github-token",
+      "description": "GitHub Enterprise token",
+      "password": true
+    },
+    {
+      "type": "promptString",
+      "id": "jenkins-api-token",
+      "description": "Jenkins API token",
+      "password": true
+    },
+    {
+      "type": "promptString",
+      "id": "confluence-token",
+      "description": "Confluence personal access token",
+      "password": true
+    },
+    {
+      "type": "promptString",
+      "id": "jira-token",
+      "description": "Jira personal access token",
+      "password": true
+    }
+  ],
+  "servers": {
+    "confluence": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "CONFLUENCE_URL",
+        "-e",
+        "CONFLUENCE_PERSONAL_TOKEN",
+        "ghcr.io/sooperset/mcp-atlassian:latest"
+      ],
+      "env": {
+        "CONFLUENCE_URL": "ADD_CONFLUENCE_URL",
+        "CONFLUENCE_PERSONAL_TOKEN": "${input:confluence-token}"
+      }
+    },
+    "jira": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "JIRA_URL",
+        "-e",
+        "JIRA_PERSONAL_TOKEN",
+        "ghcr.io/sooperset/mcp-atlassian:latest"
+      ],
+      "env": {
+        "JIRA_URL": "ADD_JIRA_URL",
+        "JIRA_PERSONAL_TOKEN": "${input:jira-token}"
+      }
+    },
+    "jenkins": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "JENKINS_URL",
+        "-e",
+        "JENKINS_USER",
+        "-e",
+        "JENKINS_API_TOKEN",
+        "node:lts-slim",
+        "npx",
+        "--yes",
+        "@mister-good-deal/host-mcp-jenkins@latest"
+      ],
+      "env": {
+        "JENKINS_URL": "ADD_JENKINS_URL",
+        "JENKINS_USER": "ADD_JENKINS_USERNAME",
+        "JENKINS_API_TOKEN": "${input:jenkins-api-token}"
+      }
+    },
+    "github-enterprise": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e",
+        "GITHUB_HOST",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github-token}",
+        "GITHUB_HOST": "ADD_GITHUB_URL"
+      }
+    }
+  }
+}
